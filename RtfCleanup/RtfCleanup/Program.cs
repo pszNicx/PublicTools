@@ -16,8 +16,8 @@ namespace RtfCleanup
                 foreach (var filePath in filePaths)
                 {
                     Console.WriteLine(String.Format("Processing file: {0}", Path.GetFileName(filePath)));
-                    var sourceFilePath = Path.Combine(@"C:\Users\Nicx\Dropbox\Transfer\", Path.GetFileName(filePath));
-                    var destinationFilePath = Path.Combine(@"C:\Users\Nicx\Dropbox\Transfer\", Path.GetFileNameWithoutExtension(filePath) + ".txt");
+                    var sourceFilePath = Path.Combine(Environment.CurrentDirectory, Path.GetFileName(filePath));
+                    var destinationFilePath = Path.Combine(Environment.CurrentDirectory, Path.GetFileNameWithoutExtension(filePath) + ".txt");
 
                     var tempFilePath = Path.GetTempFileName();
                     var text = File.ReadAllText(sourceFilePath);
