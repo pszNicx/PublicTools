@@ -20,6 +20,11 @@
                 <MenuItem Header="Save Sprite Sheet" Click="SaveSpriteSheet_Click" />
                 <MenuItem Header="Exit" Click="Exit_Click" />
             </MenuItem>
+            <MenuItem Header="Options">
+                <CheckBox x:Name="chkRequirePowerOfTwo" Content="Require Power of Two" />
+                <CheckBox x:Name="chkRequireSameSizeImages" Content="Require Same Size Images" IsChecked="True" />
+                <CheckBox x:Name="chkRestrictTo2048x2048" Content="Restrict to 2048x2048" IsChecked="True" />
+            </MenuItem>
             <MenuItem Header="Move Up" Click="MoveUp_Click" />
             <MenuItem Header="Move Down" Click="MoveDown_Click" />
             <MenuItem Header="Clear List" Click="ClearList_Click" />

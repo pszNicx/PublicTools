@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Win32;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using Microsoft.Win32;
 using WinForms = System.Windows.Forms;
 
 namespace SpriteBook
@@ -15,6 +15,21 @@ namespace SpriteBook
         public MainWindow()
         {
             this.InitializeComponent();
+        }
+
+        private bool RequirePowerOfTwo
+        {
+            get { return this.chkRequirePowerOfTwo.IsChecked.HasValue && this.chkRequirePowerOfTwo.IsChecked.Value; }
+        }
+
+        private bool RequireSameSizeImages
+        {
+            get { return this.chkRequireSameSizeImages.IsChecked.HasValue && this.chkRequireSameSizeImages.IsChecked.Value; }
+        }
+
+        private bool RestrictTo2048X2048
+        {
+            get { return this.chkRestrictTo2048x2048.IsChecked.HasValue && this.chkRestrictTo2048x2048.IsChecked.Value; }
         }
 
         private void AddFolder_Click(object sender, RoutedEventArgs e)
@@ -120,7 +135,7 @@ namespace SpriteBook
 
             try
             {
-                SpriteGenerator.GenerateSpriteSheet(this._imageList.Items.OfType<string>().ToArray<string>(), saveFileDialog.FileName, 1.0f);
+                SpriteGenerator.GenerateSpriteSheet(this._imageList.Items.OfType<string>().ToArray<string>(), saveFileDialog.FileName, 1.0f, RequireSameSizeImages, RequirePowerOfTwo, RestrictTo2048X2048);
             }
             catch (SpriteSizeException)
             {
