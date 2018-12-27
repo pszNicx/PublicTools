@@ -1,9 +1,9 @@
 ﻿using Microsoft.Win32;
+using Ookii.Dialogs.Wpf;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using WinForms = System.Windows.Forms;
 
 namespace SpriteBook
 {
@@ -17,33 +17,28 @@ namespace SpriteBook
             this.InitializeComponent();
         }
 
-        private bool RequirePowerOfTwo
-        {
-            get { return this.chkRequirePowerOfTwo.IsChecked.HasValue && this.chkRequirePowerOfTwo.IsChecked.Value; }
-        }
+        private bool RequirePowerOfTwo => this.chkRequirePowerOfTwo.IsChecked.HasValue && this.chkRequirePowerOfTwo.IsChecked.Value;
 
-        private bool RequireSameSizeImages
-        {
-            get { return this.chkRequireSameSizeImages.IsChecked.HasValue && this.chkRequireSameSizeImages.IsChecked.Value; }
-        }
+        private bool RequireSameSizeImages => this.chkRequireSameSizeImages.IsChecked.HasValue && this.chkRequireSameSizeImages.IsChecked.Value;
 
-        private bool RestrictTo2048X2048
-        {
-            get { return this.chkRestrictTo2048x2048.IsChecked.HasValue && this.chkRestrictTo2048x2048.IsChecked.Value; }
-        }
+        private bool RestrictTo2048X2048 => this.chkRestrictTo2048x2048.IsChecked.HasValue && this.chkRestrictTo2048x2048.IsChecked.Value;
 
         private void AddFolder_Click(object sender, RoutedEventArgs e)
         {
-            using (var openFolderDialog = new WinForms.FolderBrowserDialog())
+            try
             {
+                var openFolderDialog = new VistaFolderBrowserDialog();
                 var result = openFolderDialog.ShowDialog();
-                if (result == WinForms.DialogResult.OK)
-                {
-                    var folderPath = openFolderDialog.SelectedPath + "\\";
-                    var files = this.GetFiles(folderPath);
-                    foreach (var file in files)
-                        this._imageList.Items.Add(file);
-                }
+                if (!result.HasValue || !result.Value)
+                    return;
+                var folderPath = openFolderDialog.SelectedPath + "\\";
+                var files = this.GetFiles(folderPath);
+                foreach (var file in files)
+                    this._imageList.Items.Add(file);
+            }
+            catch
+            {
+                MessageBox.Show("An error was encountered trying to open the specified folder.");
             }
         }
 
@@ -56,7 +51,9 @@ namespace SpriteBook
                 Filter = "PNG Image (*.png)|*.png|All files (*.*)|*.*"
             };
 
-            openFileDialog.ShowDialog();
+            var result = openFileDialog.ShowDialog();
+            if (!result.HasValue || !result.Value)
+                return;
             foreach (var filepath in openFileDialog.FileNames)
                 this._imageList.Items.Add(filepath);
         }
@@ -71,7 +68,7 @@ namespace SpriteBook
             Application.Current.Shutdown();
         }
 
-        private List<string> GetFiles(string folder)
+        private IEnumerable<string> GetFiles(string folder)
         {
             var filePaths = new List<string>();
 
@@ -91,27 +88,25 @@ namespace SpriteBook
         private void MoveDown_Click(object sender, RoutedEventArgs e)
         {
             var selectedIndex = this._imageList.SelectedIndex;
-            if (selectedIndex < this._imageList.Items.Count - 1)
-            {
-                this._imageList.SelectedIndex = -1;
-                var lowerPath = this._imageList.Items[selectedIndex + 1] as string;
-                this._imageList.Items[selectedIndex + 1] = this._imageList.Items[selectedIndex] as string;
-                this._imageList.Items[selectedIndex] = lowerPath;
-                this._imageList.SelectedIndex = selectedIndex + 1;
-            }
+            if (selectedIndex >= this._imageList.Items.Count - 1)
+                return;
+            this._imageList.SelectedIndex = -1;
+            var lowerPath = this._imageList.Items[selectedIndex + 1] as string;
+            this._imageList.Items[selectedIndex + 1] = this._imageList.Items[selectedIndex] as string;
+            this._imageList.Items[selectedIndex] = lowerPath;
+            this._imageList.SelectedIndex = selectedIndex + 1;
         }
 
         private void MoveUp_Click(object sender, RoutedEventArgs e)
         {
-            int selectedIndex = this._imageList.SelectedIndex;
-            if (selectedIndex > 0)
-            {
-                this._imageList.SelectedIndex = -1;
-                var upperPath = this._imageList.Items[selectedIndex - 1] as string;
-                this._imageList.Items[selectedIndex - 1] = this._imageList.Items[selectedIndex] as string;
-                this._imageList.Items[selectedIndex] = upperPath;
-                this._imageList.SelectedIndex = selectedIndex - 1;
-            }
+            var selectedIndex = this._imageList.SelectedIndex;
+            if (selectedIndex <= 0)
+                return;
+            this._imageList.SelectedIndex = -1;
+            var upperPath = this._imageList.Items[selectedIndex - 1] as string;
+            this._imageList.Items[selectedIndex - 1] = this._imageList.Items[selectedIndex] as string;
+            this._imageList.Items[selectedIndex] = upperPath;
+            this._imageList.SelectedIndex = selectedIndex - 1;
         }
 
         private void RemoveImage_Click(object sender, RoutedEventArgs e)
